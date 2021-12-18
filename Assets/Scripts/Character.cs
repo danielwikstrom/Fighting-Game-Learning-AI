@@ -2,8 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character: MonoBehaviour
+public class Character : MonoBehaviour
 {
+    [SerializeField]
+    int playerID = 0;
+    [SerializeField]
+    int health = 100;
     [SerializeField]
     float speed = 2;
     [SerializeField]
@@ -20,10 +24,18 @@ public class Character: MonoBehaviour
     private Transform LowerBlockPos;
 
     private Transform _transform;
+    private Fist _fist;
     private Vector3 initFistScale;
+    private int _currentHealth;
     private bool isPunching;
-    private bool isBlocking;
-    private bool upperBlock;
+
+    public int damagePerPunch = 5;
+    [HideInInspector]
+    public bool upperPunch = true;
+    [HideInInspector]
+    public bool isBlocking;
+    [HideInInspector]
+    public bool upperBlock;
     // Start is called before the first frame update
     void Awake()
     {
@@ -32,6 +44,8 @@ public class Character: MonoBehaviour
         isBlocking = false;
         upperBlock = true;
         initFistScale = Fist.transform.localScale;
+        _currentHealth = health;
+        _fist = GetComponentInChildren<Fist>();
     }
 
     // Update is called once per frame
@@ -53,6 +67,8 @@ public class Character: MonoBehaviour
         {
             Fist.transform.position = UpperPunchPos.position;
             isPunching = true;
+            upperPunch = true;
+            _fist.ToggleCollider(true);
             StartCoroutine("ResetPunchTimer");
         }
     }
@@ -63,6 +79,8 @@ public class Character: MonoBehaviour
         {
             Fist.transform.position = LowerPunchPos.position;
             isPunching = true;
+            _fist.ToggleCollider(true);
+            upperPunch = false;
             StartCoroutine("ResetPunchTimer");
         }
     }
@@ -71,6 +89,7 @@ public class Character: MonoBehaviour
     {
         Fist.transform.position = FistPos.position;
         isPunching = false;
+        _fist.ToggleCollider(false);
     }
 
     protected void UpperBlock()
@@ -82,6 +101,7 @@ public class Character: MonoBehaviour
             newScale.y = initFistScale.y * 2;
             Fist.transform.localScale = newScale;
             isBlocking = true;
+            upperBlock = true;
         }
     }
 
@@ -94,6 +114,7 @@ public class Character: MonoBehaviour
             newScale.y = initFistScale.y * 2;
             Fist.transform.localScale = newScale;
             isBlocking = true;
+            upperBlock = false;
         }
     }
 
@@ -108,5 +129,31 @@ public class Character: MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         EndPunch();
+    }
+
+    public void GetHit(int damage)
+    {
+        _currentHealth -= damage;
+        if (_currentHealth < 0)
+        {
+            _currentHealth = 0;
+        }
+
+
+    }
+
+    public int getID()
+    {
+        return playerID;
+    }
+
+    public int GetHealth()
+    {
+        return _currentHealth;
+    }
+
+        private void Die()
+    {
+        
     }
 }
