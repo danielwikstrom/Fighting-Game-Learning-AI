@@ -33,9 +33,10 @@ public class Fist : MonoBehaviour
     }
 
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        var oponent = collision.gameObject.GetComponent<Character>();
+        Debug.Log(other.name);
+        var oponent = other.gameObject.GetComponentInParent<Character>();
         if (oponent)
         {
             if (oponent.isBlocking)
@@ -44,12 +45,13 @@ public class Fist : MonoBehaviour
                 {
                     return;
                 }
-                else if (!oponent.upperBlock && !_char.upperBlock)
+                else if (!oponent.upperBlock && !_char.upperPunch)
                 {
                     return;
                 }
             }
             oponent.GetHit(damageDealt);
+            Debug.Log("OUCH!");
         }
     }
 }

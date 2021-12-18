@@ -32,9 +32,9 @@ public class Character : MonoBehaviour
     public int damagePerPunch = 5;
     [HideInInspector]
     public bool upperPunch = true;
-    [HideInInspector]
+    //[HideInInspector]
     public bool isBlocking;
-    [HideInInspector]
+    //[HideInInspector]
     public bool upperBlock;
     // Start is called before the first frame update
     void Awake()
