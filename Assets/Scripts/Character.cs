@@ -23,18 +23,21 @@ public class Character : MonoBehaviour
     [SerializeField]
     private Transform LowerBlockPos;
 
-    private Transform _transform;
+    protected Transform _transform;
     private Fist _fist;
     private Vector3 initFistScale;
     private int _currentHealth;
-    private bool isPunching;
+    private bool canMove = true;
+    private Transform Obstacle;
 
     public int damagePerPunch = 5;
     [HideInInspector]
+    public bool isPunching = false;
+    [HideInInspector]
     public bool upperPunch = true;
-    //[HideInInspector]
+    [HideInInspector]
     public bool isBlocking;
-    //[HideInInspector]
+    [HideInInspector]
     public bool upperBlock;
     // Start is called before the first frame update
     void Awake()
@@ -48,17 +51,30 @@ public class Character : MonoBehaviour
         _fist = GetComponentInChildren<Fist>();
     }
 
-    // Update is called once per frame
-    void Update()
+    protected virtual void Start()
     {
+        Debug.Log("heyyo");
+        GameManager.instance.players.Add(this);
     }
+
 
     protected void Move(float input)
     {
-        Vector3 newPos = new Vector3();
-        newPos = _transform.position;
-        newPos.x += speed * Time.deltaTime * input;
-        _transform.position = newPos;
+            Vector3 newPos = new Vector3();
+            newPos = _transform.position;
+            newPos.x += speed * Time.deltaTime * input;
+        if (canMove)
+        {
+            _transform.position = newPos;
+        }
+        else
+        {
+            float distance = (_transform.position - Obstacle.position).magnitude;
+            if (distance < (newPos - Obstacle.position).magnitude)
+            {
+                _transform.position = newPos;
+            }
+        }
     }
 
     protected void UpperPunch()
@@ -155,5 +171,22 @@ public class Character : MonoBehaviour
         private void Die()
     {
         
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.GetComponent<Character>())
+        {
+            Obstacle = collision.gameObject.transform;
+            canMove = false;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.GetComponent<Character>())
+        {
+            canMove = true;
+        }
     }
 }
