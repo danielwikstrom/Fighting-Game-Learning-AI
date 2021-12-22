@@ -10,6 +10,12 @@ public class Character : MonoBehaviour
     int health = 100;
     [SerializeField]
     float speed = 2;
+    //The time in seconds that it takes to throw a punch
+    [SerializeField]
+    float punchSpeed = 0.1f;
+    //After a punch gets blocked, the agent cant punch or block
+    [SerializeField]
+    float blockStunTime = 0.5f;
     [SerializeField]
     private GameObject Fist;
     [SerializeField]
@@ -29,6 +35,7 @@ public class Character : MonoBehaviour
     private int _currentHealth;
     private bool canMove = true;
     private Transform Obstacle;
+    private Vector3 initPos;
 
     public int damagePerPunch = 5;
     [HideInInspector]
@@ -39,6 +46,8 @@ public class Character : MonoBehaviour
     public bool isBlocking;
     [HideInInspector]
     public bool upperBlock;
+    [HideInInspector]
+    public bool wasBlocked;
     // Start is called before the first frame update
     void Awake()
     {
@@ -46,14 +55,14 @@ public class Character : MonoBehaviour
         isPunching = false;
         isBlocking = false;
         upperBlock = true;
-        initFistScale = Fist.transform.localScale;
         _currentHealth = health;
+        initFistScale = Fist.transform.localScale;
         _fist = GetComponentInChildren<Fist>();
+        initPos = _transform.position;
     }
 
     protected virtual void Start()
     {
-        Debug.Log("heyyo");
         GameManager.instance.players.Add(this);
     }
 
@@ -63,6 +72,10 @@ public class Character : MonoBehaviour
             Vector3 newPos = new Vector3();
             newPos = _transform.position;
             newPos.x += speed * Time.deltaTime * input;
+        if (newPos.x <= GameManager.instance.mapMinX || newPos.x > GameManager.instance.mapMaxX)
+        {
+            return;
+        }
         if (canMove)
         {
             _transform.position = newPos;
@@ -79,38 +92,58 @@ public class Character : MonoBehaviour
 
     protected void UpperPunch()
     {
-        if (!isPunching && !isBlocking)
+        if (!isPunching && !isBlocking && !wasBlocked)
         {
-            Fist.transform.position = UpperPunchPos.position;
-            isPunching = true;
             upperPunch = true;
-            _fist.ToggleCollider(true);
-            StartCoroutine("ResetPunchTimer");
+            StartCoroutine(ThrowPunch(UpperPunchPos));
         }
     }
 
     protected void LowerPunch()
     {
-        if (!isPunching && !isBlocking)
+        if (!isPunching && !isBlocking && !wasBlocked)
         {
-            Fist.transform.position = LowerPunchPos.position;
-            isPunching = true;
-            _fist.ToggleCollider(true);
             upperPunch = false;
-            StartCoroutine("ResetPunchTimer");
+            StartCoroutine(ThrowPunch(LowerPunchPos));
         }
     }
 
-    private void EndPunch()
+    IEnumerator ThrowPunch(Transform FistEndPos)
     {
-        Fist.transform.position = FistPos.position;
+        float delta = 0.0f;
+        isPunching = true;
+        while (delta < 1)
+        {
+            delta += Time.deltaTime/punchSpeed;
+            Vector3 newPos = Vector3.Lerp(FistPos.position, FistEndPos.position, delta);
+            Fist.transform.position = newPos;
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+        delta = 0;
+        //_fist.ToggleCollider(true);
+        //yield return new WaitForSeconds(Time.deltaTime);
+        //_fist.ToggleCollider(false);
+        while (delta < 1)
+        {
+            delta += Time.deltaTime / punchSpeed;
+            Vector3 newPos = Vector3.Lerp(FistEndPos.position, FistPos.position, delta);
+            Fist.transform.position = newPos;
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
         isPunching = false;
-        _fist.ToggleCollider(false);
     }
+
+    IEnumerator BlockStun()
+    {
+        wasBlocked = true;
+        yield return new WaitForSeconds(blockStunTime);
+        wasBlocked = false;
+    }
+  
 
     protected void UpperBlock()
     {
-        if (!isPunching)
+        if (!isPunching && !wasBlocked)
         {
             Fist.transform.position = UpperBlockPos.position;
             Vector3 newScale = Fist.transform.localScale;
@@ -123,7 +156,7 @@ public class Character : MonoBehaviour
 
     protected void LowerBlock()
     {
-        if (!isPunching)
+        if (!isPunching && !wasBlocked)
         {
             Fist.transform.position = LowerBlockPos.position;
             Vector3 newScale = Fist.transform.localScale;
@@ -141,21 +174,28 @@ public class Character : MonoBehaviour
         isBlocking = false;
     }
 
-    IEnumerator ResetPunchTimer()
-    {
-        yield return new WaitForSeconds(0.2f);
-        EndPunch();
-    }
 
-    public void GetHit(int damage)
+    public virtual void GetHit(int damage)
     {
         _currentHealth -= damage;
         if (_currentHealth < 0)
         {
             _currentHealth = 0;
+            Die();
         }
+    }
 
+    public virtual void OponentGotHit()
+    { 
+    }
 
+    public virtual void BlockedPunch()
+    {
+    }
+
+    public virtual void PunchGotBlocked()
+    {
+        StartCoroutine("BlockStun");
     }
 
     public int getID()
@@ -168,10 +208,25 @@ public class Character : MonoBehaviour
         return _currentHealth;
     }
 
-        private void Die()
+    protected virtual void Die()
     {
-        
+        GameManager.instance.CharacterDied(this.playerID);
     }
+
+    public virtual void Reset(bool positionOnly = false)
+    {
+        if (!positionOnly)
+        {
+            isPunching = false;
+            isBlocking = false;
+            upperBlock = true;
+            _currentHealth = health;
+            EndBlock();
+        }
+
+        _transform.position = initPos;
+    }
+
 
     private void OnCollisionEnter(Collision collision)
     {

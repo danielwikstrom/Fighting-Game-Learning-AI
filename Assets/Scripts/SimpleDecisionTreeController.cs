@@ -14,12 +14,17 @@ public class SimpleDecisionTreeController : AIController
 
     private void UpdateDecisionTree()
     {
-        if (oponent && !IsInRange())
+        if (oponent && !IsInRange(GetDistanceToOponent()))
         {
             if (isTooFar)
+            {
                 MoveTowardsOponent();
+            }
             else
+            {
                 MoveAwayFromOponent();
+                DoRandomAction();
+            }
         }
         else
         {

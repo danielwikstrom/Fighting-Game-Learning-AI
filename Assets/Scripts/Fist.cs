@@ -14,7 +14,7 @@ public class Fist : MonoBehaviour
     void Awake()
     {
         _col = GetComponent<Collider>();
-        _col.enabled = false;
+        //_col.enabled = false;
 
         _char = GetComponentInParent<Character>();
         charID = _char.getID();
@@ -35,23 +35,30 @@ public class Fist : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.name);
+        if (!other.CompareTag("CharacterBody"))
+        {
+            return;
+        }
         var oponent = other.gameObject.GetComponentInParent<Character>();
-        if (oponent)
+        if (_char.isPunching && oponent && oponent.getID() != _char.getID())
         {
             if (oponent.isBlocking)
             {
                 if (oponent.upperBlock && _char.upperPunch)
                 {
+                    _char.PunchGotBlocked();
+                    oponent.BlockedPunch();
                     return;
                 }
                 else if (!oponent.upperBlock && !_char.upperPunch)
                 {
+                    _char.PunchGotBlocked();
+                    oponent.BlockedPunch();
                     return;
                 }
             }
             oponent.GetHit(damageDealt);
-            Debug.Log("OUCH!");
+            _char.OponentGotHit();
         }
     }
 }

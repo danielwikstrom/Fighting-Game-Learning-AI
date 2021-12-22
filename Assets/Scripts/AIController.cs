@@ -79,10 +79,9 @@ public class AIController : Character
     }
 
     // Will return true if the oponent is withing the set distance to attack or block attacks;
-    protected bool IsInRange()
+    protected bool IsInRange(float distance)
     {
 
-        var distance = _transform.position.x - oponent.transform.position.x;
         if (distance > minDistance && distance < maxDistance)
         {
             return true;
@@ -130,6 +129,13 @@ public class AIController : Character
     {
         LowerBlock();
         StartCoroutine("AIBlock");
+    }
+
+    public override void Reset(bool positionOnly = false)
+    {
+        base.Reset();
+        if(!positionOnly)
+            StartCoroutine("GetOponent");
     }
 
     IEnumerator AIBlock()
