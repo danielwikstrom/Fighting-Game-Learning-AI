@@ -675,23 +675,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerID: 1
   health: 100
-  speed: 2
+  speed: 0.1
   punchSpeed: 0.1
+  blockStunTime: 1.2
   Fist: {fileID: 2520380252991182075}
   FistPos: {fileID: 2520380253037552942}
   UpperPunchPos: {fileID: 2520380252905109999}
   LowerPunchPos: {fileID: 2520380253725781177}
   UpperBlockPos: {fileID: 2520380252975977728}
   LowerBlockPos: {fileID: 2520380254377028453}
-  damagePerPunch: 5
+  damagePerPunch: 10
   isPunching: 0
   upperPunch: 1
   isBlocking: 0
   upperBlock: 0
+  wasBlocked: 0
   oponent: {fileID: 0}
-  minBlockDuration: 1
+  minBlockDuration: 0.2
   minDistance: 3.2
   maxDistance: 3.8
+  isLearning: 1
 --- !u!1 &2520380254377028452
 GameObject:
   m_ObjectHideFlags: 0

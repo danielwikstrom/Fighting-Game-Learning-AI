@@ -14,7 +14,9 @@ public class SimpleDecisionTreeController : AIController
 
     private void UpdateDecisionTree()
     {
-        if (oponent && !IsInRange(GetDistanceToOponent()))
+        if (!oponent)
+            return;
+        if ( !IsInRange(GetDistanceToOponent()))
         {
             if (isTooFar)
             {
@@ -23,12 +25,46 @@ public class SimpleDecisionTreeController : AIController
             else
             {
                 MoveAwayFromOponent();
-                DoRandomAction();
+                AIUpperBlock();
             }
         }
         else
         {
-            DoRandomAction();
+            if (oponent.isPunching)
+            {
+                if (oponent.upperPunch)
+                {
+                    AIUpperBlock();
+                }
+                else
+                {
+                    AILowerBlock();
+                }
+            }
+            else if (oponent.isBlocking)
+            {
+                if (oponent.upperBlock)
+                {
+                    LowerPunch();
+                }
+                else
+                {
+                    UpperPunch();
+                }
+            }
+            else if (oponent.wasBlocked)
+            {
+                int rand = Random.Range(0, 2);
+                if (rand == 0)
+                {
+                    UpperPunch();
+                }
+                else
+                {
+                    LowerPunch();
+                }
+            }
+
         }
     }
 }

@@ -317,8 +317,8 @@ MonoBehaviour:
   players: []
   mapMinX: -6
   mapMaxX: 6
-  TimeMultiplier: 35
-  MatchesPerRotation: 20
+  TimeMultiplier: 5
+  MatchesPerRotation: 1
   GoalWinPercentage: 0.6
   currentMatches: 0
   numWins: 0
@@ -1468,18 +1468,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2520380254100830477, guid: 847b278d66c3ad64bb6def41b03db835, type: 3}
-      propertyPath: speed
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2520380254100830477, guid: 847b278d66c3ad64bb6def41b03db835, type: 3}
-      propertyPath: blockStunTime
-      value: 1.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2520380254100830477, guid: 847b278d66c3ad64bb6def41b03db835, type: 3}
-      propertyPath: minBlockDuration
-      value: 0.2
-      objectReference: {fileID: 0}
     - target: {fileID: 2520380254100830514, guid: 847b278d66c3ad64bb6def41b03db835, type: 3}
       propertyPath: m_Name
       value: QLearingAI

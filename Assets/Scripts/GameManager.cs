@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour
     public QLearningController nonLearningAgent;
     public SimpleDecisionTreeController RandomAgent;
 
+    public TextAsset qMatrixJson;
+
     public float timer = 0.0f;
 
     // Start is called before the first frame update
@@ -82,12 +84,11 @@ public class GameManager : MonoBehaviour
         if (currentMatches >= MatchesPerRotation)
         {
             numRotations++;
-
+            learningAgent.PrintQMatrix();
             float currentWinRate = numWins / (float)currentMatches;
             Debug.Log("CURRENT WINRATE: " + currentWinRate + " | " + GoalWinPercentage);
             if (currentWinRate >= GoalWinPercentage)
             {
-                Debug.Log("yowegothere");
                 this.Q = new Dictionary<QLearningController.GAMESTATE, float[,]>();
                 this.Q = learningAgent.Q;
                 //change ai with another

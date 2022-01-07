@@ -61,11 +61,100 @@ public class QLearningController : AIController
     public ACTION currentAction;
 
 
+    [System.Serializable]
+    public class QStates
+    {
+        public bool inRange;
+        public bool isTooFar;
+        public bool isPunching;
+        public bool isUpperPunch;
+        public bool isBlocking;
+        public bool isUpperBlock;
+        public bool isStunBlocked;
+        public bool isOponentPunching;
+        public bool oponentUpperPunch;
+        public bool isOponentBlocking;
+        public bool oponentUpperBlock;
+        public bool isOponentStunBlocked;
+        public float[] MOVEAWAY;
+        public float[] MOVETOWARDS;
+        public float[] STAY;
 
+
+    }
+
+
+    [System.Serializable]
+    public class Qdata
+    {
+        public QStates[] qdata;
+    }
+
+    public class JsonSerializer
+    {
+        public void ReadFile(TextAsset json)
+        {
+            Qdata qMatrixData = JsonUtility.FromJson<Qdata>(json.text);
+            foreach (QStates state in qMatrixData.qdata)
+            {
+                Debug.Log(" STATE :");
+                Debug.Log("|    IN RANGE    | " + state.inRange);
+                Debug.Log("|    TOO FAR     | " + state.isTooFar);
+                Debug.Log("|  IS PUNCHING   | " + state.isPunching);
+                Debug.Log("|  UPPER PUNCH   | " + state.isUpperPunch);
+                Debug.Log("|  IS BLOCKING   | " + state.isBlocking);
+                Debug.Log("|  UPPER BLOCK   | " + state.isUpperBlock);
+                Debug.Log("|   IS STUNNED   | " + state.isStunBlocked);
+                Debug.Log("| OP IS PUNCHING | " + state.isOponentPunching);
+                Debug.Log("| OP UPPER PUNCH | " + state.oponentUpperPunch);
+                Debug.Log("| OP IS BLOCKING | " + state.isOponentBlocking);
+                Debug.Log("| OP UPPER BLOCK | " + state.oponentUpperBlock);
+                Debug.Log("| OP IS STUNNED  | " + state.isOponentStunBlocked);
+            }
+        }
+    }
+    public void PrintQMatrix()
+    {
+        string qmatrix = "";
+        foreach (KeyValuePair<GAMESTATE, float[,]> entry in Q)
+        {
+            //Debug.Log(" STATE :");
+            //Debug.Log("|    IN RANGE    | " + entry.Key.inRange);
+            //Debug.Log("|    TOO FAR     | " + entry.Key.isTooFar);
+            //Debug.Log("|  IS PUNCHING   | " + entry.Key.isPunching);
+            //Debug.Log("|  UPPER PUNCH   | " + entry.Key.isUpperPunch);
+            //Debug.Log("|  IS BLOCKING   | " + entry.Key.isBlocking);
+            //Debug.Log("|  UPPER BLOCK   | " + entry.Key.isUpperBlock);
+            //Debug.Log("|   IS STUNNED   | " + entry.Key.isStunBlocked);
+            //Debug.Log("| OP IS PUNCHING | " + entry.Key.isOponentPunching);
+            //Debug.Log("| OP UPPER PUNCH | " + entry.Key.oponentUpperPunch);
+            //Debug.Log("| OP IS BLOCKING | " + entry.Key.isOponentBlocking);
+            //Debug.Log("| OP UPPER BLOCK | " + entry.Key.oponentUpperBlock);
+            //Debug.Log("| OP IS STUNNED  | " + entry.Key.isOponentStunBlocked);
+
+
+            //qmatrix.Remove(qmatrix.Length-1);
+            foreach (MOVEACTION m in Enum.GetValues(typeof(MOVEACTION)))
+            {
+                int i = (int)m;
+                //Debug.Log(" ACTION :");
+                foreach (FIGHTACTION f in Enum.GetValues(typeof(FIGHTACTION)))
+                {
+                    int j = (int)f;
+                    //Debug.Log("| " + (MOVEACTION)i + " | " + (FIGHTACTION)j + " | " + entry.Value[i, j]);
+                    
+                }
+            }
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
     {
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.ReadFile(GameManager.instance.qMatrixJson);
+
+
         base.Start();
         StartCoroutine("GetOponent");
         Q = new Dictionary<GAMESTATE, float[,]>();
@@ -90,7 +179,6 @@ public class QLearningController : AIController
                 float rand = UnityEngine.Random.Range(0.0f, 1.0f);
                 if (rand < EXPLORATION_RATE)
                 {
-                    Debug.Log("EXPLORING");
                     int randomAction = UnityEngine.Random.Range(0, NUM_MOVEACTION - 1);
                     currentAction.moveAction = (MOVEACTION)randomAction;
                     randomAction = UnityEngine.Random.Range(0, NUM_FIGHTACTION - 1);

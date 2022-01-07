@@ -752,17 +752,19 @@ MonoBehaviour:
   health: 100
   speed: 2
   punchSpeed: 0.1
+  blockStunTime: 0.5
   Fist: {fileID: 3514689959639728717}
   FistPos: {fileID: 3514689959786312600}
   UpperPunchPos: {fileID: 3514689959654518617}
   LowerPunchPos: {fileID: 3514689960508422671}
   UpperBlockPos: {fileID: 3514689959574193078}
   LowerBlockPos: {fileID: 3514689961125920211}
-  damagePerPunch: 5
+  damagePerPunch: 10
   isPunching: 0
   upperPunch: 1
   isBlocking: 0
   upperBlock: 0
+  wasBlocked: 0
   oponent: {fileID: 0}
   minBlockDuration: 1
   minDistance: 3.2

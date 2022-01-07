@@ -338,17 +338,19 @@ MonoBehaviour:
   health: 100
   speed: 2
   punchSpeed: 0.1
+  blockStunTime: 0.5
   Fist: {fileID: 2928048023389286979}
   FistPos: {fileID: 2928048023401628566}
   UpperPunchPos: {fileID: 2928048023269580631}
   LowerPunchPos: {fileID: 2928048023049996801}
   UpperBlockPos: {fileID: 2928048023342625720}
   LowerBlockPos: {fileID: 2928048021521878493}
-  damagePerPunch: 5
+  damagePerPunch: 10
   isPunching: 0
   upperPunch: 1
   isBlocking: 0
   upperBlock: 0
+  wasBlocked: 0
 --- !u!54 &257650355144601485
 Rigidbody:
   m_ObjectHideFlags: 0
