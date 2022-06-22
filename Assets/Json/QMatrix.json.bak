@@ -1,0 +1,19 @@
+{
+	"qdata": [{
+		"inRange": false,
+		"isTooFar": false,
+		"isPunching": false,
+		"isUpperPunch": false,
+		"isBlocking": false,
+		"isUpperBlock": false,
+		"isStunBlocked": false,
+		"isOponentPunching": false,
+		"oponentUpperPunch": false,
+		"isOponentBlocking": false,
+		"oponentUpperBlock": false,
+		"isOponentStunBlocked": false,
+		"MOVEAWAY": [0.0,0.0,0.0,0.0,0.0],
+		"MOVETOWARDS": [0.0,0.0,0.0,0.0,0.0],
+		"STAY": [0.0,0.0,0.0,0.0,0.0]
+	}]
+}
